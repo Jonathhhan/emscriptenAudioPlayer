@@ -44,8 +44,6 @@ class ofApp : public ofBaseApp, public PdReceiver, public PdMidiReceiver {
 
 		ofxPd pd;
 		Patch patch;
-		ofEvent<std::vector<float>> audioInLeftEvent; 
-		ofEvent<std::vector<float>> audioInRightEvent; 	
 		toggle toggle_1;
 		bang bang_1;
 		hSlider hSlider_1;
