@@ -28,7 +28,6 @@ class ofApp : public ofBaseApp, public PdReceiver, public PdMidiReceiver {
 		
 		// pd message receiver callbacks
 		void print(const std::string &message);
-		
 		void receiveBang(const std::string &dest);
 		void receiveFloat(const std::string &dest, float value);
 		void receiveSymbol(const std::string &dest, const std::string &symbol);
