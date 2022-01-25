@@ -4,6 +4,9 @@
 
 using namespace emscripten;
 
+	ofEvent<std::vector<float>> audioInLeftEvent; 
+	ofEvent<std::vector<float>> audioInRightEvent; 	
+
 void audioInLeft(const emscripten::val &audioIn) {                     
 	std::vector<float> rv;   
 	const auto l = audioIn["length"].as<unsigned>();      
