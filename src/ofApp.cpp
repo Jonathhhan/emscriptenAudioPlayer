@@ -194,7 +194,6 @@ void ofApp::receiveSymbol(const std::string &dest, const std::string &symbol) {
 
 void ofApp::receiveList(const std::string &dest, const pd::List &list) {
 
-	
 }
 
 void ofApp::receiveMessage(const std::string&dest, const std::string &msg, const pd::List &list) {
