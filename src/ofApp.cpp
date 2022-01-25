@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2011 Dan Wilcox <danomatika@gmail.com>
- *
- * BSD Simplified License.
- * For information on usage and redistribution, and for a DISCLAIMER OF ALL
- * WARRANTIES, see the file, "LICENSE.txt," in this distribution.
- *
- * See https://github.com/danomatika/ofxPd for documentation
- *
- */
 #include "ofApp.h"
 #include "emscripten.h"
 #include "emscripten/bind.h"
@@ -41,51 +31,35 @@ EMSCRIPTEN_BINDINGS(Module) {
 }
 
 void ofApp::audioChangedLeft(std::vector<float> & rv) {
-	pd.startMessage();
-	pd.addSymbol("arraySizeLeft");
-	pd.addFloat(rv.size());	
-	pd.finishList(patch.dollarZeroStr()+"-fromOF");
-	pd.writeArray("left", rv);
+	pd.sendFloat(patch.dollarZeroStr() + "-arraySize", rv.size());
+	pd.resizeArray(patch.dollarZeroStr() + "-left", rv.size());
+	pd.writeArray(patch.dollarZeroStr() + "-left", rv);
 }
 
-void ofApp::audioChangedRight(std::vector<float> & rv) {
-	pd.startMessage();
-	pd.addSymbol("arraySizeRight");
-	pd.addFloat(rv.size());	
-	pd.finishList(patch.dollarZeroStr()+"-fromOF");
-	pd.writeArray("right", rv);
+void ofApp::audioChangedRight(std::vector<float> & rv) {	
+	pd.sendFloat(patch.dollarZeroStr() + "-arraySize", rv.size());
+	pd.resizeArray(patch.dollarZeroStr() + "-right", rv.size());
+	pd.writeArray(patch.dollarZeroStr() + "-right", rv);
 }
 
 //--------------------------------------------------------------
 void ofApp::toggle_1onMousePressed(bool & e){
-	pd.startMessage();
-	pd.addSymbol("play");
-	pd.addFloat(e);
-	pd.finishList(patch.dollarZeroStr()+"-fromOF");
+	pd.sendFloat(patch.dollarZeroStr() + "-play", e);
 }
 
 //--------------------------------------------------------------
 void ofApp::hSlider_1onMousePressed(float & e){
-	pd.startMessage();
-	pd.addSymbol("tempo");
-	pd.addFloat(e);
-	pd.finishList(patch.dollarZeroStr()+"-fromOF");
+	pd.sendFloat(patch.dollarZeroStr() + "-tempo", e);
 	}
 
 //--------------------------------------------------------------
 void ofApp::hSlider_2onMousePressed(float & e){
-	pd.startMessage();
-	pd.addSymbol("lowpass");
-	pd.addFloat(e);
-	pd.finishList(patch.dollarZeroStr()+"-fromOF");
+	pd.sendFloat(patch.dollarZeroStr() + "-lowpass", e);
 }
 
 //--------------------------------------------------------------
 void ofApp::hSlider_3onMousePressed(float & e){
-	pd.startMessage();
-	pd.addSymbol("volume");
-	pd.addFloat(e);
-	pd.finishList(patch.dollarZeroStr()+"-fromOF");
+	pd.sendFloat(patch.dollarZeroStr() + "-volume", e);
 }
 
 //--------------------------------------------------------------
@@ -110,18 +84,15 @@ void ofApp::setup() {
 	label_3.setup(120, 140, 200, 20, "Tempo");
 	label_4.setup(120, 180, 200, 20, "Lowpass");
 	label_5.setup(120, 220, 200, 20, "Volume");
-	label_7.setup(120, 60, 200, 20, "Load audio");
+	label_7.setup(120, 60, 200, 20, "Load Audio");
 	toggle_1.setup(20, 100, 20);
 	toggle_1.value = true;
 	bang_1.setup(20, 60, 20);
-	hSlider_1.setup(20, 140, 80, 20, -5, 5);
-	hSlider_1.value = 1;
-	hSlider_1.slider = 0.6;
+	hSlider_1.setup(20, 140, 80, 20, -2, 2);
+	hSlider_1.slider = 0.75;
 	hSlider_2.setup(20, 180, 80, 20, 1, 125);
-	hSlider_2.value = 100;
 	hSlider_2.slider = 0.8;
 	hSlider_3.setup(20, 220, 80, 20, 0, 1);
-	hSlider_3.value = 0.5;
 	hSlider_3.slider = 0.5;
 	
 	//ofSetLogLevel("Pd", OF_LOG_VERBOSE); // see verbose info inside
@@ -150,65 +121,20 @@ void ofApp::setup() {
 	settings.setOutListener(this);
 	ofSoundStreamSetup(settings);
 
-	// setup Pd
-	//
-	// set 4th arg to true for queued message passing using an internal ringbuffer,
-	// this is useful if you need to control where and when the message callbacks
-	// happen (ie. within a GUI thread)
-	//
-	// note: you won't see any message prints until update() is called since
-	// the queued messages are processed there, this is normal
-	//
 	if(!pd.init(2, numInputs, 44100, ticksPerBuffer, false)) {
 		OF_EXIT_APP(1);
 	}
 
-	midiChan = 1; // midi channels are 1-16
-
 	// subscribe to receive source names
 	pd.subscribe("toOF");
-	pd.subscribe("env");
-
-	// add message receiver, required if you want to recieve messages
 	pd.addReceiver(*this); // automatically receives from all subscribed sources
-	pd.ignoreSource(*this, "env");        // don't receive from "env"
-	//pd.ignoreSource(*this);             // ignore all sources
-	//pd.receiveSource(*this, "toOF");	  // receive only from "toOF"
-
-	// add midi receiver, required if you want to recieve midi messages
-	pd.addMidiReceiver(*this); // automatically receives from all channels
-	//pd.ignoreMidiChannel(*this, 1);     // ignore midi channel 1
-	//pd.ignoreMidiChannel(*this);        // ignore all channels
-	//pd.receiveMidiChannel(*this, 1);    // receive only from channel 1
-
-	// add the data/pd folder to the search path
-	//pd.addToSearchPath("pd/abs");
-
-	// audio processing on
 	pd.start();
-
-	// -----------------------------------------------------
-	//cout << endl << "BEGIN Patch Test" << endl;
-	// open patch
 	patch = pd.openPatch("pd/test.pd");
-	cout << patch << endl;
-	pd.startMessage();
-	pd.addSymbol("play");
-	pd.addFloat(true);
-	pd.finishList(patch.dollarZeroStr()+"-fromOF");
-	pd.startMessage();
-	pd.addSymbol("tempo");
-	pd.addFloat(1);
-	pd.finishList(patch.dollarZeroStr()+"-fromOF");
-	pd.startMessage();
-	pd.addSymbol("lowpass");
-	pd.addFloat(100);
-	pd.finishList(patch.dollarZeroStr()+"-fromOF");
-	pd.startMessage();
-	pd.addSymbol("volume");
-	pd.addFloat(0.5);
-	pd.finishList(patch.dollarZeroStr()+"-fromOF");
-	//cout << "FINISH Patch Test" << endl;
+	
+	pd.sendFloat(patch.dollarZeroStr() + "-play", true);
+	pd.sendFloat(patch.dollarZeroStr() + "-tempo", 1);
+	pd.sendFloat(patch.dollarZeroStr() + "-lowpass", 100);
+	pd.sendFloat(patch.dollarZeroStr() + "-volume", 0.75);
 }
 
 //--------------------------------------------------------------
@@ -235,76 +161,7 @@ void ofApp::draw() {
 
 //--------------------------------------------------------------
 void ofApp::exit() {
-
-	// cleanup
 	ofSoundStreamStop();
-}
-
-//--------------------------------------------------------------
-void ofApp::playTone(int pitch) {
-	pd << StartMessage() << "pitch" << pitch << FinishList("tone") << Bang("tone");
-}
-
-//--------------------------------------------------------------
-void ofApp::keyPressed (int key) {
-
-	switch(key) {
-		
-		// musical keyboard
-		case 'a':
-			playTone(60);
-			break;
-		case 'w':
-			playTone(61);
-			break;
-		case 's':
-			playTone(62);
-			break;
-		case 'e':
-			playTone(63);
-			break;
-		case 'd':
-			playTone(64);
-			break;
-		case 'f':
-			playTone(65);
-			break;
-		case 't':
-			playTone(66);
-			break;
-		case 'g':
-			playTone(67);
-			break;
-		case 'y':
-			playTone(68);
-			break;
-		case 'h':
-			playTone(69);
-			break;
-		case 'u':
-			playTone(70);
-			break;
-		case 'j':
-			playTone(71);
-			break;
-		case 'k':
-			playTone(72);
-			break;
-
-		case ' ':
-			if(pd.isReceivingSource(*this, "env")) {
-				pd.ignoreSource(*this, "env");
-				cout << "ignoring env" << endl;
-			}
-			else {
-				pd.receiveSource(*this, "env");
-				cout << "receiving from env" << endl;
-			}
-			break;
-
-		default:
-			break;
-	}
 }
 
 //--------------------------------------------------------------
@@ -319,20 +176,20 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels) {
 
 //--------------------------------------------------------------
 void ofApp::print(const std::string &message) {
-	cout << message << endl;
+
 }
 
 //--------------------------------------------------------------
 void ofApp::receiveBang(const std::string &dest) {
-	cout << "OF: bang " << dest << endl;
+
 }
 
 void ofApp::receiveFloat(const std::string &dest, float value) {
-	cout << "OF: float " << dest << ": " << value << endl;
+
 }
 
 void ofApp::receiveSymbol(const std::string &dest, const std::string &symbol) {
-	cout << "OF: symbol " << dest << ": " << symbol << endl;
+
 }
 
 void ofApp::receiveList(const std::string &dest, const pd::List &list) {
@@ -341,37 +198,5 @@ void ofApp::receiveList(const std::string &dest, const pd::List &list) {
 }
 
 void ofApp::receiveMessage(const std::string&dest, const std::string &msg, const pd::List &list) {
-	cout << "OF: message " << dest << ": " << msg << " " << list.toString() << list.types() << endl;
-}
 
-//--------------------------------------------------------------
-void ofApp::receiveNoteOn(const int channel, const int pitch, const int velocity) {
-	cout << "OF MIDI: note on: " << channel << " " << pitch << " " << velocity << endl;
-}
-
-void ofApp::receiveControlChange(const int channel, const int controller, const int value) {
-	cout << "OF MIDI: control change: " << channel << " " << controller << " " << value << endl;
-}
-
-// note: pgm nums are 1-128 to match pd
-void ofApp::receiveProgramChange(const int channel, const int value) {
-	cout << "OF MIDI: program change: " << channel << " " << value << endl;
-}
-
-void ofApp::receivePitchBend(const int channel, const int value) {
-	cout << "OF MIDI: pitch bend: " << channel << " " << value << endl;
-}
-
-void ofApp::receiveAftertouch(const int channel, const int value) {
-	cout << "OF MIDI: aftertouch: " << channel << " " << value << endl;
-}
-
-void ofApp::receivePolyAftertouch(const int channel, const int pitch, const int value) {
-	cout << "OF MIDI: poly aftertouch: " << channel << " " << pitch << " " << value << endl;
-}
-
-// note: pd adds +2 to the port num, so sending to port 3 in pd to [midiout],
-//       shows up at port 1 in ofxPd
-void ofApp::receiveMidiByte(const int port, const int byte) {
-	cout << "OF MIDI: midi byte: " << port << " " << byte << endl;
 }
