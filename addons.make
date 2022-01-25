@@ -1,2 +1,1 @@
 ofxPd2
-ofxXmlSettings
