@@ -50,7 +50,7 @@ void ofApp::toggle_1onMousePressed(bool & e){
 //--------------------------------------------------------------
 void ofApp::hSlider_1onMousePressed(float & e){
 	pd.sendFloat(patch.dollarZeroStr() + "-tempo", e);
-	}
+}
 
 //--------------------------------------------------------------
 void ofApp::hSlider_2onMousePressed(float & e){
