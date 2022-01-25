@@ -4,8 +4,8 @@
 
 using namespace emscripten;
 
-	ofEvent<std::vector<float>> audioInLeftEvent; 
-	ofEvent<std::vector<float>> audioInRightEvent; 	
+ofEvent<std::vector<float>> audioInLeftEvent; 
+ofEvent<std::vector<float>> audioInRightEvent; 	
 
 void audioInLeft(const emscripten::val &audioIn) {                     
 	std::vector<float> rv;   
