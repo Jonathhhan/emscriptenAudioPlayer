@@ -72,13 +72,13 @@ void ofApp::bang_1onMousePressed(bool & e){
 //--------------------------------------------------------------
 void ofApp::setup() {
 	ofBackground(100, 100, 100);
-	ofAddListener(toggle_1.onMousePressed, this, &ofApp::toggle_1onMousePressed);
-	ofAddListener(hSlider_1.onMousePressed, this, &ofApp::hSlider_1onMousePressed);
-	ofAddListener(hSlider_2.onMousePressed, this, &ofApp::hSlider_2onMousePressed); 
-	ofAddListener(hSlider_3.onMousePressed, this, &ofApp::hSlider_3onMousePressed);
-	ofAddListener(bang_1.onMousePressed, this, &ofApp::bang_1onMousePressed);
-	ofAddListener(audioInLeftEvent, this, &ofApp::audioChangedLeft);
-	ofAddListener(audioInRightEvent, this, &ofApp::audioChangedRight);
+	ofAddListener(toggle_1.onMousePressed, this, & ofApp::toggle_1onMousePressed);
+	ofAddListener(hSlider_1.onMousePressed, this, & ofApp::hSlider_1onMousePressed);
+	ofAddListener(hSlider_2.onMousePressed, this, & ofApp::hSlider_2onMousePressed); 
+	ofAddListener(hSlider_3.onMousePressed, this, & ofApp::hSlider_3onMousePressed);
+	ofAddListener(bang_1.onMousePressed, this, & ofApp::bang_1onMousePressed);
+	ofAddListener(audioInLeftEvent, this, & ofApp::audioChangedLeft);
+	ofAddListener(audioInRightEvent, this, & ofApp::audioChangedRight);
 	label_1.setup(20, 20, 300, 20, "Audio Player");
 	label_2.setup(120, 100, 200, 20, "Play");
 	label_3.setup(120, 140, 200, 20, "Tempo");
@@ -175,27 +175,27 @@ void ofApp::audioRequested(float * output, int bufferSize, int nChannels) {
 }
 
 //--------------------------------------------------------------
-void ofApp::print(const std::string &message) {
+void ofApp::print(const std::string & message) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::receiveBang(const std::string &dest) {
+void ofApp::receiveBang(const std::string & dest) {
 
 }
 
-void ofApp::receiveFloat(const std::string &dest, float value) {
+void ofApp::receiveFloat(const std::string & dest, float value) {
 
 }
 
-void ofApp::receiveSymbol(const std::string &dest, const std::string &symbol) {
+void ofApp::receiveSymbol(const std::string & dest, const std::string & symbol) {
 
 }
 
-void ofApp::receiveList(const std::string &dest, const pd::List &list) {
+void ofApp::receiveList(const std::string & dest, const pd::List & list) {
 
 }
 
-void ofApp::receiveMessage(const std::string&dest, const std::string &msg, const pd::List &list) {
+void ofApp::receiveMessage(const std::string & dest, const std::string & msg, const pd::List & list) {
 
 }
