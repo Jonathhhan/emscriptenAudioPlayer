@@ -7,7 +7,7 @@ using namespace emscripten;
 ofEvent<std::vector<float>> audioInLeftEvent; 
 ofEvent<std::vector<float>> audioInRightEvent; 	
 
-void audioInLeft(const emscripten::val &audioIn) {                     
+void audioInLeft(const emscripten::val & audioIn) {                     
 	std::vector<float> rv;   
 	const auto l = audioIn["length"].as<unsigned>();      
 	rv.resize(l);   
@@ -16,7 +16,7 @@ void audioInLeft(const emscripten::val &audioIn) {
 	audioInLeftEvent.notify(rv); 
 }  
 
-void audioInRight(const emscripten::val &audioIn) {                     
+void audioInRight(const emscripten::val & audioIn) {                     
 	std::vector<float> rv;   
 	const auto l = audioIn["length"].as<unsigned>();      
 	rv.resize(l);   
@@ -26,8 +26,8 @@ void audioInRight(const emscripten::val &audioIn) {
 } 
 
 EMSCRIPTEN_BINDINGS(Module) {
-	emscripten::function("audioInLeft", &audioInLeft);
-	emscripten::function("audioInRight", &audioInRight);
+	emscripten::function("audioInLeft", & audioInLeft);
+	emscripten::function("audioInRight", & audioInRight);
 }
 
 void ofApp::audioChangedLeft(std::vector<float> & rv) {
